@@ -23,6 +23,7 @@
   let tip = null;
   let paused = false;
   let last = null;
+  let mode = 'screen'; // 'screen' | 'webcam'
 
   function resize() {
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -58,8 +59,35 @@
     input.clear();
     setPaused(false);
     show('#title', false); show('#over', false);
+    show('#cam-mini', mode === 'webcam');
     goFullscreen();
     SV.Wind.init();
+  }
+
+  function setMode(m) {
+    mode = m;
+    document.body.classList.toggle('webcam', m === 'webcam');
+  }
+
+  function playScreen() {
+    if (mode === 'webcam') SV.WebcamMode.stop();
+    setMode('screen');
+    startGame();
+  }
+
+  function playWebcam() {
+    setMode('webcam');
+    show('#title', false); show('#over', false);
+    goFullscreen();       // needs the click, so it happens here, not after calibration
+    SV.Wind.init();
+    SV.WebcamMode.open();
+  }
+
+  function backToMenu() {
+    if (mode === 'webcam') SV.WebcamMode.stop();
+    setMode('screen');
+    game.state = 'title';
+    show('#over', false); show('#cam-setup', false); show('#title', true);
   }
 
   function setPaused(p) {
@@ -84,9 +112,11 @@
   function onAction(a) {
     if (a === 'deploy') {
       if (game.state === 'play' && !paused) game.openParachute('player');
-      else if (game.state === 'title' || game.state === 'over') startGame();
+      else onAction('start');
     } else if (a === 'start') {
-      if (game.state === 'title' || game.state === 'over') startGame();
+      if (!$('#cam-setup').hidden) return;
+      if (game.state === 'title') playScreen();
+      else if (game.state === 'over') startGame();
       else if (paused) setPaused(false);
     } else if (a === 'pause') {
       setPaused(!paused);
@@ -107,8 +137,16 @@
   SV.game = game; // handy for tuning from the console
   const input = new SV.Input(onAction, onControl);
   input.bindPad($('#pad'));
-  $('#play').addEventListener('click', startGame);
+  $('#play').addEventListener('click', playScreen);
+  $('#play-cam').addEventListener('click', playWebcam);
   $('#again').addEventListener('click', startGame);
+  $('#menu').addEventListener('click', backToMenu);
+  SV.WebcamMode.init({
+    input,
+    onReady: startGame,
+    onBack: backToMenu,
+    onDeploy: () => { if (game.state === 'play' && !paused) game.openParachute('player'); },
+  });
   $('#resume').addEventListener('click', () => setPaused(false));
   document.addEventListener('visibilitychange', () => { if (document.hidden) setPaused(true); });
 
@@ -190,7 +228,8 @@
 
     world.drawForeground(ctx, game.alt);
     if (game.state === 'play' || game.state === 'canopy') {
-      SV.HUD.draw(ctx, game, { w: W, h: H, pose: shown, tip, touch });
+      SV.HUD.draw(ctx, game, { w: W, h: H, pose: shown, tip, touch,
+        webcam: mode === 'webcam', camWarning: mode === 'webcam' ? SV.WebcamMode.warning() : '' });
     }
   }
 

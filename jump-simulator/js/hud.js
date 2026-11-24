@@ -62,7 +62,7 @@
   }
 
   function draw(ctx, g, view) {
-    const { w, h, pose, tip, touch } = view;
+    const { w, h, pose, tip, touch, webcam, camWarning } = view;
     const s = Math.min(1.25, Math.max(0.7, Math.min(w, h) / 720));
     const j = g.jumper;
 
@@ -89,6 +89,7 @@
     if (g.state === 'play') {
       text(ctx, SV.describe(j.flight), w / 2, by, 17 * s, '#fff', 'center', 800);
       if (g.hint) text(ctx, g.hint, w / 2, by - 30 * s, 16 * s, '#ffd166', 'center', 800);
+      if (camWarning && Math.sin(g.time * 8) > -0.4) text(ctx, camWarning, w / 2, h * 0.62, 20 * s, '#ff8a8a', 'center', 900);
       if (tip) {
         ctx.font = `600 ${14 * s}px ${FONT}`;
         const tw = Math.min(w - 32, ctx.measureText(tip.text).width + 32 * s);
@@ -100,7 +101,7 @@
     }
 
     // keyboard legend (desktop)
-    if (!touch && g.state === 'play' && g.time < 14) {
+    if (!touch && !webcam && g.state === 'play' && g.time < 14) {
       const lines = ['A/D  pernas: dobrar / esticar', 'Q/E  braços: à frente / para trás',
         '↑/↓  sela: menos / mais', '←/→  curvas', 'ESPAÇO  abrir   ·   P  pausa'];
       ctx.globalAlpha = Math.min(1, 14 - g.time);

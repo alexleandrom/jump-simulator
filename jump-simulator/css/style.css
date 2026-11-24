@@ -113,3 +113,43 @@ body.touch .pad {
   .pad .deploy { width: 86px; height: 54px; font-size: 15px; }
   .keys { grid-template-columns: 1fr; }
 }
+
+/* ---- v2: mode choice, webcam ---- */
+.card.wide { width: min(820px, 100%); }
+.choose { margin: 4px 0 12px; font-size: 15px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--gold); }
+.modes { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.mode {
+  display: flex; flex-direction: column; gap: 10px; align-items: stretch;
+  background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 16px; padding: 16px;
+}
+.mode h4 { margin: 0; font-size: 19px; font-weight: 900; }
+.mode .keys { grid-template-columns: 1fr; margin: 0; flex: 1; }
+.mode .touch-only { flex: 1; }
+.mode .big { padding: 12px 18px; font-size: 16px; }
+.gestures { text-align: left; font-size: 13px; line-height: 1.45; margin: 0; padding-left: 18px; flex: 1; }
+.big.alt { background: #2f6fd6; box-shadow: 0 6px 0 #1b4590; }
+.big.alt:active { box-shadow: 0 3px 0 #1b4590; }
+.big.ghost { background: rgba(255, 255, 255, 0.12); box-shadow: none; border: 1px solid rgba(255, 255, 255, 0.3); }
+.row { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+.cam-big {
+  width: 100%; aspect-ratio: 4 / 3; max-height: 52vh; object-fit: cover;
+  border-radius: 14px; background: #000; display: block; margin: 0 auto 12px;
+}
+.cam-status { font-size: 17px; font-weight: 800; margin: 0 0 10px; min-height: 1.4em; }
+.cam-status.error { color: #ff8a8a; }
+.progress { height: 10px; border-radius: 999px; background: rgba(255, 255, 255, 0.15); overflow: hidden; margin: 0 0 12px; }
+.progress div { height: 100%; width: 0; background: var(--green); transition: width 0.1s linear; }
+
+.cam-mini {
+  position: fixed; right: 14px; bottom: 14px; z-index: 4;
+  width: clamp(120px, 20vw, 260px); aspect-ratio: 4 / 3;
+  border-radius: 14px; border: 2px solid rgba(255, 255, 255, 0.5);
+  background: #000; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+body.webcam .pad { display: none !important; }
+
+@media (max-width: 640px) {
+  .modes { grid-template-columns: 1fr; }
+}

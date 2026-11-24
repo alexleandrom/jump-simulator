@@ -56,8 +56,17 @@
       root.addEventListener('contextmenu', (e) => e.preventDefault());
     }
 
+    /** Controls from another source (the webcam). Newly added ones count as presses. */
+    setExternal(set) {
+      const prev = this.external || new Set();
+      if (prev.size === set.size && [...set].every((id) => prev.has(id))) return;
+      this.external = set;
+      this.sync();
+      for (const id of set) if (!prev.has(id)) this.onControl(id);
+    }
+
     sync() {
-      this.held = new Set([...this.keyHeld.values(), ...this.touchHeld.values()]);
+      this.held = new Set([...this.keyHeld.values(), ...this.touchHeld.values(), ...(this.external || [])]);
       document.querySelectorAll('[data-control]').forEach((b) => b.classList.toggle('on', this.held.has(b.dataset.control)));
     }
 

@@ -10,35 +10,68 @@
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🪂</text></svg>">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800;900&display=swap">
-  <link rel="stylesheet" href="css/style.css?v=3">
+  <link rel="stylesheet" href="css/style.css?v=5">
 </head>
 <body>
   <canvas id="game" aria-label="Paraquedista em queda livre visto de lado"></canvas>
 
   <!-- Title -->
   <section id="title" class="overlay">
-    <div class="card">
+    <div class="card wide">
       <h1>SKYVENTURE<span>Queda livre</span></h1>
       <p class="lead">Saia a 4.000 m, use o corpo para voar até seus colegas, faça o <b>dock</b> devagar e de frente,
         faça o <b>break-off</b> e <b>abra entre 1.700 e 1.200 m</b>.</p>
-      <div class="keys desktop-only">
-        <div><kbd>A</kbd><kbd>D</kbd> pernas: dobrar / esticar</div>
-        <div><kbd>Q</kbd><kbd>E</kbd> braços: à frente / para trás</div>
-        <div><kbd>↑</kbd><kbd>↓</kbd> sela: menos / mais</div>
-        <div><kbd>←</kbd><kbd>→</kbd> curvas</div>
-        <div><kbd>Espaço</kbd> abrir o paraquedas</div>
-        <div><kbd>P</kbd> pausa · <kbd>M</kbd> som · <kbd>F</kbd> tela cheia</div>
-      </div>
-      <p class="touch-only small">Segure os botões na tela: combine pernas, braços, sela e curvas.</p>
       <ul class="rules">
-        <li><b>Para frente</b>: pernas esticadas e/ou braços para trás.</li>
-        <li><b>Para trás</b>: pernas dobradas e/ou braços à frente.</li>
+        <li><b>Para frente</b>: pernas esticadas e/ou braços para trás. <b>Para trás</b>: pernas dobradas e/ou braços à frente.</li>
         <li><b>Subir</b> em relação ao grupo: menos sela. <b>Descer</b>: mais sela.</li>
         <li>Só dá para avançar <b>na direção em que você está virado</b> — use as curvas.</li>
       </ul>
-      <button id="play" class="big">SALTAR!</button>
+      <h3 class="choose">Escolha como jogar</h3>
+      <div class="modes">
+        <div class="mode">
+          <h4>🖥️ Tela</h4>
+          <div class="keys desktop-only">
+            <div><kbd>A</kbd><kbd>D</kbd> pernas: dobrar / esticar</div>
+            <div><kbd>Q</kbd><kbd>E</kbd> braços: frente / trás</div>
+            <div><kbd>↑</kbd><kbd>↓</kbd> sela: menos / mais</div>
+            <div><kbd>←</kbd><kbd>→</kbd> curvas</div>
+            <div><kbd>Espaço</kbd> abrir · <kbd>P</kbd> pausa</div>
+          </div>
+          <p class="touch-only small">Segure os botões na tela: combine pernas, braços, sela e curvas.</p>
+          <button id="play" class="big">SALTAR!</button>
+        </div>
+        <div class="mode">
+          <h4>📷 Webcam</h4>
+          <ul class="gestures">
+            <li><b>Neutro</b>: em pé, braços em box, joelhos flexionados</li>
+            <li><b>Pernas</b>: ficar em pé estica · agachar dobra</li>
+            <li><b>Braços</b>: estender = frente · mãos baixas = trás</li>
+            <li><b>Sela</b>: tronco para trás = mais · para frente = menos</li>
+            <li><b>Curvas</b>: baixar o ombro do lado da curva</li>
+            <li><b>Abrir</b>: uma mão acima da cabeça e a outra no quadril</li>
+          </ul>
+          <button id="play-cam" class="big alt">SALTAR COM A WEBCAM</button>
+        </div>
+      </div>
     </div>
   </section>
+
+  <!-- Webcam setup / calibration -->
+  <section id="cam-setup" class="overlay" hidden>
+    <div class="card wide">
+      <h2>Calibrando a webcam</h2>
+      <canvas id="cam-big" class="cam-big"></canvas>
+      <p id="cam-status" class="cam-status">Preparando…</p>
+      <div class="progress"><div id="cam-progress"></div></div>
+      <p class="small">Afaste-se até aparecer de corpo inteiro (cabeça aos pés). A imagem não sai do seu computador.</p>
+      <div class="row">
+        <button id="cam-back" class="big ghost">Voltar</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- In-game webcam preview -->
+  <canvas id="cam-mini" class="cam-mini" hidden></canvas>
 
   <!-- Pause -->
   <section id="pause" class="overlay" hidden>
@@ -61,7 +94,10 @@
         <div><dt>Abertura</dt><dd id="res-alt">0</dd></div>
       </dl>
       <p id="res-best" class="best"></p>
-      <button id="again" class="big">Saltar de novo</button>
+      <div class="row">
+        <button id="again" class="big">Saltar de novo</button>
+        <button id="menu" class="big ghost">Trocar modo</button>
+      </div>
     </div>
   </section>
 
@@ -89,13 +125,16 @@
     </div>
   </div>
 
-  <script src="js/physics.js?v=3"></script>
-  <script src="js/jumper.js?v=3"></script>
-  <script src="js/world.js?v=3"></script>
-  <script src="js/game.js?v=3"></script>
-  <script src="js/hud.js?v=3"></script>
-  <script src="js/input.js?v=3"></script>
-  <script src="js/audio.js?v=3"></script>
-  <script src="js/main.js?v=3"></script>
+  <script src="js/physics.js?v=5"></script>
+  <script src="js/jumper.js?v=5"></script>
+  <script src="js/world.js?v=5"></script>
+  <script src="js/game.js?v=5"></script>
+  <script src="js/hud.js?v=5"></script>
+  <script src="js/input.js?v=5"></script>
+  <script src="js/audio.js?v=5"></script>
+  <script src="js/pose-classify.js?v=5"></script>
+  <script src="js/webcam.js?v=5"></script>
+  <script src="js/webcam-mode.js?v=5"></script>
+  <script src="js/main.js?v=5"></script>
 </body>
 </html>
