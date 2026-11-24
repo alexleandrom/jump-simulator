@@ -1,0 +1,12 @@
+{
+  "name": "jump-simulator",
+  "version": "2.0.0",
+  "private": true,
+  "description": "Simulador de queda livre em tela cheia, com modo webcam (Skyventure).",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
